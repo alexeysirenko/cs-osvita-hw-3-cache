@@ -13,19 +13,29 @@ There must be a better way!
   DO NOT MODIFY THIS FUNCTION, the tests assume it works correctly, which it
   currently does
 */
-void matrix_multiply(double **C, double **A, double **B, int a_rows, int a_cols,
+void matrix_multiply(double **output, double **A, double **B, int a_rows, int a_cols,
                      int b_cols) {
-  for (int i = 0; i < a_rows; i++) {
-    for (int j = 0; j < b_cols; j++) {
-      C[i][j] = 0;
+  for (int row = 0; row < a_rows; row++) {
+    for (int col = 0; col < b_cols; col++) {
+      output[row][col] = 0;
       for (int k = 0; k < a_cols; k++)
-        C[i][j] += A[i][k] * B[k][j];
+        output[row][col] += A[row][k] * B[k][col];
     }
   }
 }
 
-void fast_matrix_multiply(double **C, double **A, double **B, int a_rows,
+void fast_matrix_multiply(double **output, double **A, double **B, int a_rows,
                           int a_cols, int b_cols) {
-  // TODO: write a faster implementation here!
-  return matrix_multiply(C, A, B, a_rows, a_cols, b_cols);
+  for (int row = 0; row < a_rows; row++)
+    for (int col = 0; col < b_cols; col++)
+      output[row][col] = 0;
+
+  for (int row = 0; row < a_rows; row++) {
+    for (int k = 0; k < a_cols; k++) {
+      double a_val = A[row][k];
+      for (int col = 0; col < b_cols; col++) {
+        output[row][col] += a_val * B[k][col];
+      }
+    }
+  }
 }

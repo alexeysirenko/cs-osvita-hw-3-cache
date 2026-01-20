@@ -1,3 +1,4 @@
 bin/
 cachegrind.out.*
 out.bmp
+!bin/.gitkeep
