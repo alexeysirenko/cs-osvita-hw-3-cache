@@ -1,2 +1,2 @@
-void matrix_multiply(double **c, double **a, double **b, int a_height, int b_height, int b_width);
-void fast_matrix_multiply(double **c, double **a, double **b, int a_height, int b_height, int b_width);
+void matrix_multiply(double **output, double **A, double **B, int a_rows, int a_cols, int b_cols);
+void fast_matrix_multiply(double **output, double **A, double **B, int a_rows, int a_cols, int b_cols);
