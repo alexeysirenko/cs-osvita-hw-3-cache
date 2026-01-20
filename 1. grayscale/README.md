@@ -8,6 +8,20 @@ gcc -O0 -g -o bin/grayscale grayscale.c -lm
 valgrind --tool=cachegrind --cache-sim=yes ./bin/grayscale
 ```
 
+### Before
+
+```bash
+for (x = 0; x < width; x++) {
+    for (y = 0; y < height; y++) {
+```
+
+### After
+
+```bash
+for (y = 0; y < height; y++) {
+    for (x = 0; x < width; x++) {
+```
+
 ### Performance comparison
 
 ```
