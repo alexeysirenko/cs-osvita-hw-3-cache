@@ -1,89 +1,41 @@
 import csv
-import datetime
 import math
-import time
 
 
-class Address(object):
-    def __init__(self, address_line, zipcode):
-        self.address_line = address_line
-        self.zipcode = zipcode
+class Data:
+    def __init__(self):
+        self.ages = []
+        self.payment_amounts = []
 
 
-class DollarAmount(object):
-    def __init__(self, dollars, cents):
-        self.dollars = dollars
-        self.cents = cents
+def average_age(data):
+    return sum(data.ages) / len(data.ages)
 
 
-class Payment(object):
-    def __init__(self, dollar_amount, time):
-        self.amount = dollar_amount
-        self.time = time
+def average_payment_amount(data):
+    return sum(data.payment_amounts) / len(data.payment_amounts)
 
 
-class User(object):
-    def __init__(self, user_id, name, age, address, payments):
-        self.user_id = user_id
-        self.name = name
-        self.age = age
-        self.address = address
-        self.payments = payments
-
-
-def average_age(users):
-    total = 0
-    for u in users.values():
-        total += u.age
-    return total / len(users)
-
-
-def average_payment_amount(users):
-    amount = 0
-    count = 0
-    for u in users.values():
-        count += len(u.payments)
-        for p in u.payments:
-            amount += float(p.amount.dollars) + float(p.amount.cents) / 100
-    return amount / count
-
-
-def stddev_payment_amount(users):
-    mean = average_payment_amount(users)
-    squared_diffs = 0
-    count = 0
-    for u in users.values():
-        count += len(u.payments)
-        for p in u.payments:
-            amount = float(p.amount.dollars) + float(p.amount.cents) / 100
-            diff = amount - mean
-            squared_diffs += diff * diff
-    return math.sqrt(squared_diffs / count)
+def stddev_payment_amount(data):
+    mean = average_payment_amount(data)
+    squared_diffs = sum((amt - mean) ** 2 for amt in data.payment_amounts)
+    return math.sqrt(squared_diffs / len(data.payment_amounts))
 
 
 def load_data():
-    users = {}
+    data = Data()
+
     with open('users.csv') as f:
         for line in csv.reader(f):
-            uid, name, age, address_line, zip_code = line
-            addr = Address(address_line, zip_code)
-            users[int(uid)] = User(int(uid), name, int(age), addr, [])
+            age = int(line[2])
+            data.ages.append(age)
+
     with open('payments.csv') as f:
         for line in csv.reader(f):
-            amount, timestamp, uid = line
-            payment = Payment(
-                DollarAmount(dollars=int(amount)//100, cents=int(amount) % 100),
-                time=datetime.datetime.fromisoformat(timestamp))
-            users[int(uid)].payments.append(payment)
-    return users
+            amount_cents = int(line[0])
+            data.payment_amounts.append(amount_cents / 100.0)
+
+    return data
 
 
-if __name__ == '__main__':
-    t = time.perf_counter()
-    users = load_data()
-    print(f'Data loading: {time.perf_counter() - t:.3f}s')
-    t = time.perf_counter()
-    assert abs(average_age(users) - 59.626) < 0.01
-    assert abs(stddev_payment_amount(users) - 288684.849) < 0.01
-    assert abs(average_payment_amount(users) - 499850.559) < 0.01
-    print(f'Computation {time.perf_counter() - t:.3f}s')
+
